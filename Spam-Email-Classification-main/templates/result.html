@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Spam Classifier - Result</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #000C1D;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .result-card {
+            background: #0a1628;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .result-icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+        }
+        .spam .result-icon { color: #ff4d4d; }
+        .ham .result-icon { color: #00e676; }
+        .result-badge {
+            display: inline-block;
+            padding: 10px 40px;
+            border-radius: 50px;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+        }
+        .spam .result-badge { background: rgba(255,77,77,0.2); color: #ff4d4d; border: 2px solid #ff4d4d; }
+        .ham .result-badge { background: rgba(0,230,118,0.2); color: #00e676; border: 2px solid #00e676; }
+        .message-preview {
+            background: #111e33;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin: 20px 0;
+            text-align: left;
+            font-size: 14px;
+            color: #aaa;
+            max-height: 120px;
+            overflow-y: auto;
+            line-height: 1.6;
+            border-left: 4px solid #007BFF;
+        }
+        .message-preview span { color: #ccc; }
+        .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 25px; flex-wrap: wrap; }
+        .btn {
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .btn:hover { transform: scale(1.05); opacity: 0.9; }
+        .btn-primary { background: #007BFF; color: #fff; }
+        .btn-outline { background: transparent; color: #fff; border: 2px solid #555; }
+        .confidence-bar {
+            margin: 20px 0 5px;
+            text-align: left;
+            font-size: 13px;
+            color: #888;
+        }
+        .bar-track {
+            background: #1a2a40;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+        .spam .bar-fill { background: #ff4d4d; }
+        .ham .bar-fill { background: #00e676; }
+    </style>
+</head>
+<body>
+    <div class="result-card {{ 'spam' if prediction == 'Spam' else 'ham' }}">
+        {% if prediction == "Spam" %}
+            <div class="result-icon"><i class="fas fa-ban"></i></div>
+            <div class="result-badge">⚠ SPAM</div>
+            <p style="color:#aaa; margin-bottom:10px;">This message has been identified as <strong style="color:#ff4d4d;">spam</strong>. Be cautious!</p>
+        {% else %}
+            <div class="result-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="result-badge">✔ NOT SPAM</div>
+            <p style="color:#aaa; margin-bottom:10px;">This message looks <strong style="color:#00e676;">legitimate</strong>. You're safe!</p>
+        {% endif %}
+
+        <div class="message-preview">
+            <small style="color:#555; display:block; margin-bottom:6px;">YOUR MESSAGE</small>
+            <span>{{ message }}</span>
+        </div>
+
+        <div class="confidence-bar">
+            Confidence Level
+            <div class="bar-track">
+                <div class="bar-fill" id="bar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <a href="/index" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Classify Another</a>
+            <a href="/logout" class="btn btn-outline"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            document.getElementById('bar').style.width = '{{ "92" if prediction == "Spam" else "88" }}%';
+        }, 300);
+    </script>
+</body>
+</html>

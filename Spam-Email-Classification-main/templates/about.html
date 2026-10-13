@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpamGuard - About</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Poppins', sans-serif; background: #000C1D; color: #fff; overflow-x: hidden; }
+        a { text-decoration: none; }
+
+        /* NAV — identical to home */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 60px;
+            background: rgba(0,12,29,0.85); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .nav-logo { font-size: 22px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .nav-logo i { color: #007BFF; }
+        .nav-links { display: flex; align-items: center; gap: 30px; }
+        .nav-links a { color: #aaa; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; }
+        .nav-btn {
+            padding: 9px 24px; background: #007BFF; color: #fff !important;
+            border-radius: 50px; font-size: 14px; font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,123,255,0.4); }
+
+        /* BACKGROUND — identical to home */
+        .hero-bg {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse at 70% 30%, rgba(0,123,255,0.12) 0%, transparent 55%),
+                radial-gradient(ellipse at 20% 80%, rgba(138,43,226,0.08) 0%, transparent 50%),
+                #000C1D;
+        }
+        .hero-grid {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 0;
+            background-image:
+                linear-gradient(rgba(0,123,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,123,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* PAGE WRAPPER */
+        .page { position: relative; z-index: 1; padding-top: 80px; }
+
+        /* HERO BANNER */
+        .about-hero {
+            padding: 80px 60px 60px;
+            text-align: center;
+        }
+        .section-tag {
+            display: inline-block; background: rgba(0,123,255,0.1);
+            color: #007BFF; padding: 5px 16px; border-radius: 50px;
+            font-size: 12px; font-weight: 600; margin-bottom: 16px;
+            border: 1px solid rgba(0,123,255,0.2);
+        }
+        .about-hero h1 { font-size: 52px; font-weight: 800; line-height: 1.15; margin-bottom: 18px; }
+        .about-hero h1 span {
+            background: linear-gradient(135deg, #007BFF, #00d4ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .about-hero p { color: #aaa; font-size: 17px; max-width: 560px; margin: 0 auto 40px; line-height: 1.7; }
+        .hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .btn-primary {
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #007BFF, #0040a0);
+            color: #fff; border-radius: 50px; font-size: 15px; font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,123,255,0.4); color: #fff; }
+        .btn-outline {
+            padding: 14px 32px; border: 2px solid rgba(255,255,255,0.15);
+            color: #fff; border-radius: 50px; font-size: 15px; font-weight: 600;
+            transition: border-color 0.2s, background 0.2s;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-outline:hover { border-color: #007BFF; background: rgba(0,123,255,0.1); color: #fff; }
+
+        /* STATS */
+        .stats-section { padding: 0 60px 70px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; max-width: 900px; margin: 0 auto; }
+        .stat-card {
+            text-align: center; padding: 28px 20px;
+            background: rgba(10,22,40,0.7); backdrop-filter: blur(10px);
+            border-radius: 18px; border: 1px solid rgba(255,255,255,0.06);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-4px); border-color: rgba(0,123,255,0.3); }
+        .stat-card .num {
+            font-size: 36px; font-weight: 800;
+            background: linear-gradient(135deg, #007BFF, #00d4ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .stat-card .lbl { color: #888; font-size: 13px; margin-top: 6px; }
+
+        /* MISSION */
+        .mission-section { padding: 70px 60px; background: rgba(5,13,26,0.6); }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; max-width: 1100px; margin: 0 auto; }
+        .mission-visual {
+            background: rgba(10,22,40,0.8); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px; padding: 36px; backdrop-filter: blur(10px);
+        }
+        .mission-visual .icon-big { font-size: 64px; color: #007BFF; margin-bottom: 20px; }
+        .mission-visual h3 { font-size: 20px; font-weight: 700; margin-bottom: 12px; }
+        .mission-visual p { color: #888; font-size: 14px; line-height: 1.7; }
+        .tech-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+        .tech-tag {
+            padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+            background: rgba(0,123,255,0.1); color: #007BFF;
+            border: 1px solid rgba(0,123,255,0.2);
+        }
+        .mission-text h2 { font-size: 36px; font-weight: 700; margin-bottom: 16px; }
+        .mission-text h2 span {
+            background: linear-gradient(135deg, #007BFF, #00d4ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .mission-text p { color: #aaa; font-size: 15px; line-height: 1.8; margin-bottom: 16px; }
+        .check-list { list-style: none; margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .check-list li { display: flex; align-items: flex-start; gap: 12px; color: #ccc; font-size: 14px; line-height: 1.6; }
+        .check-list li i { color: #00e676; margin-top: 2px; flex-shrink: 0; }
+
+        /* TECH STACK */
+        .tech-section { padding: 70px 60px; }
+        .section-header { text-align: center; margin-bottom: 50px; }
+        .section-header h2 { font-size: 36px; font-weight: 700; margin-bottom: 10px; }
+        .section-header p { color: #888; font-size: 15px; max-width: 480px; margin: 0 auto; }
+        .tech-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; max-width: 1000px; margin: 0 auto; }
+        .tech-card {
+            background: rgba(10,22,40,0.7); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.06); border-radius: 20px;
+            padding: 28px 24px;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+        .tech-card:hover { transform: translateY(-5px); border-color: rgba(0,123,255,0.3); box-shadow: 0 12px 40px rgba(0,123,255,0.1); }
+        .tech-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 16px; }
+        .ic-blue { background: rgba(0,123,255,0.15); color: #007BFF; }
+        .ic-green { background: rgba(0,230,118,0.15); color: #00e676; }
+        .ic-purple { background: rgba(168,85,247,0.15); color: #a855f7; }
+        .ic-orange { background: rgba(255,165,0,0.15); color: #ffa500; }
+        .ic-cyan { background: rgba(0,212,255,0.15); color: #00d4ff; }
+        .ic-red { background: rgba(255,77,77,0.15); color: #ff4d4d; }
+        .tech-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        .tech-card p { color: #888; font-size: 13px; line-height: 1.7; }
+
+        /* TEAM / TIMELINE */
+        .timeline-section { padding: 70px 60px; background: rgba(5,13,26,0.6); }
+        .timeline { max-width: 700px; margin: 0 auto; position: relative; }
+        .timeline::before {
+            content: ''; position: absolute; left: 20px; top: 0; bottom: 0;
+            width: 2px; background: linear-gradient(180deg, #007BFF, transparent);
+        }
+        .timeline-item { display: flex; gap: 30px; margin-bottom: 36px; position: relative; }
+        .timeline-dot {
+            width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+            background: linear-gradient(135deg, #007BFF, #0040a0);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+            position: relative; z-index: 1;
+        }
+        .timeline-body { padding-top: 8px; }
+        .timeline-body h4 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+        .timeline-body p { color: #888; font-size: 13px; line-height: 1.7; }
+
+        /* CTA */
+        .cta-section {
+            padding: 80px 60px; text-align: center;
+            background: linear-gradient(135deg, rgba(0,123,255,0.08) 0%, rgba(0,64,160,0.05) 100%);
+            border-top: 1px solid rgba(0,123,255,0.1);
+            border-bottom: 1px solid rgba(0,123,255,0.1);
+        }
+        .cta-section h2 { font-size: 38px; font-weight: 700; margin-bottom: 14px; }
+        .cta-section p { color: #aaa; font-size: 16px; margin-bottom: 35px; }
+
+        /* FOOTER */
+        footer { padding: 40px 60px; background: rgba(5,13,26,0.8); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+        .footer-logo { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .footer-logo i { color: #007BFF; }
+        footer p { color: #555; font-size: 13px; }
+        .footer-links { display: flex; gap: 20px; }
+        .footer-links a { color: #555; font-size: 13px; transition: color 0.2s; }
+        .footer-links a:hover { color: #007BFF; }
+
+        @media (max-width: 900px) {
+            nav { padding: 16px 24px; }
+            .about-hero { padding: 60px 24px 40px; }
+            .about-hero h1 { font-size: 36px; }
+            .stats-section, .mission-section, .tech-section, .timeline-section, .cta-section { padding: 50px 24px; }
+            .two-col { grid-template-columns: 1fr; gap: 30px; }
+            .tech-grid { grid-template-columns: 1fr 1fr; }
+            .stats-grid { grid-template-columns: repeat(2,1fr); }
+            footer { padding: 30px 24px; }
+        }
+        @media (max-width: 550px) {
+            .tech-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BACKGROUND -->
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-logo"><i class="fas fa-shield-halved"></i> SpamGuard</div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/about" class="active">About</a>
+            <a href="/#features">Features</a>
+            <a href="/#how">How It Works</a>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;">
+            <a href="/signin" style="color:#aaa;font-size:14px;font-weight:500;">Sign In</a>
+            <a href="/signup" class="nav-btn">Get Started</a>
+        </div>
+    </nav>
+
+    <div class="page">
+
+        <!-- HERO BANNER -->
+        <section class="about-hero">
+            <div class="section-tag">ABOUT SPAMGUARD</div>
+            <h1>Built to Keep Your<br>Inbox <span>Safe & Clean</span></h1>
+            <p>SpamGuard is an AI-powered email classification system that uses machine learning to instantly detect spam — protecting you from phishing, scams, and unwanted messages.</p>
+            <div class="hero-btns">
+                <a href="/signup" class="btn-primary"><i class="fas fa-rocket"></i> Try It Free</a>
+                <a href="/#how" class="btn-outline"><i class="fas fa-play-circle"></i> How It Works</a>
+            </div>
+        </section>
+
+        <!-- STATS -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card"><div class="num">96%</div><div class="lbl">Detection Accuracy</div></div>
+                <div class="stat-card"><div class="num">5K+</div><div class="lbl">Emails Trained On</div></div>
+                <div class="stat-card"><div class="num">&lt;1s</div><div class="lbl">Classification Speed</div></div>
+                <div class="stat-card"><div class="num">2</div><div class="lbl">Input Methods</div></div>
+            </div>
+        </section>
+
+        <!-- MISSION -->
+        <section class="mission-section">
+            <div class="two-col">
+                <div class="mission-visual">
+                    <div class="icon-big"><i class="fas fa-shield-halved"></i></div>
+                    <h3>Our Technology</h3>
+                    <p>SpamGuard uses a Naive Bayes classifier trained on the SMS Spam Collection dataset, combined with TF-IDF vectorization and NLP preprocessing to achieve high accuracy spam detection.</p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">Flask</span>
+                        <span class="tech-tag">scikit-learn</span>
+                        <span class="tech-tag">NLTK</span>
+                        <span class="tech-tag">MongoDB</span>
+                        <span class="tech-tag">TF-IDF</span>
+                        <span class="tech-tag">Naive Bayes</span>
+                        <span class="tech-tag">OCR</span>
+                    </div>
+                </div>
+                <div class="mission-text">
+                    <div class="section-tag" style="margin-bottom:16px;">OUR MISSION</div>
+                    <h2>Why We Built <span>SpamGuard</span></h2>
+                    <p>Email spam is one of the most persistent threats in digital communication. From phishing attacks to fraudulent offers, spam emails waste time and put users at risk.</p>
+                    <p>SpamGuard was built to solve this problem using modern machine learning — making spam detection fast, accurate, and accessible to everyone.</p>
+                    <ul class="check-list">
+                        <li><i class="fas fa-check-circle"></i> Trained on thousands of real-world spam and ham emails</li>
+                        <li><i class="fas fa-check-circle"></i> NLP preprocessing with stemming and stopword removal</li>
+                        <li><i class="fas fa-check-circle"></i> Bigram TF-IDF features for better pattern recognition</li>
+                        <li><i class="fas fa-check-circle"></i> Screenshot OCR support for image-based emails</li>
+                        <li><i class="fas fa-check-circle"></i> Secure user accounts with hashed passwords</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- TECH STACK -->
+        <section class="tech-section">
+            <div class="section-header">
+                <div class="section-tag">TECHNOLOGY</div>
+                <h2>What Powers SpamGuard</h2>
+                <p>A modern full-stack application built with industry-standard tools.</p>
+            </div>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon ic-blue"><i class="fab fa-python"></i></div>
+                    <h3>Python & Flask</h3>
+                    <p>The backend is built with Python and Flask, providing a lightweight and fast web server for the classification API.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon ic-green"><i class="fas fa-brain"></i></div>
+                    <h3>Naive Bayes + TF-IDF</h3>
+                    <p>Multinomial Naive Bayes classifier with bigram TF-IDF vectorization achieves 96% accuracy on the test set.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon ic-purple"><i class="fas fa-language"></i></div>
+                    <h3>NLTK NLP</h3>
+                    <p>Natural Language Toolkit handles tokenization, stemming, and stopword removal to clean and normalize email text.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon ic-orange"><i class="fas fa-database"></i></div>
+                    <h3>MongoDB</h3>
+                    <p>User accounts and prediction history are stored in MongoDB, providing flexible and scalable NoSQL storage.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon ic-cyan"><i class="fas fa-image"></i></div>
+                    <h3>Tesseract OCR</h3>
+                    <p>Pytesseract extracts text from email screenshots, allowing classification of image-based spam emails.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon ic-red"><i class="fas fa-lock"></i></div>
+                    <h3>Secure Auth</h3>
+                    <p>SHA-256 password hashing, Flask sessions, and duplicate detection keep user accounts safe and secure.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- HOW IT WORKS TIMELINE -->
+        <section class="timeline-section">
+            <div class="section-header">
+                <div class="section-tag">UNDER THE HOOD</div>
+                <h2>How Classification Works</h2>
+                <p>From raw email text to a spam verdict in milliseconds.</p>
+            </div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"><i class="fas fa-keyboard"></i></div>
+                    <div class="timeline-body">
+                        <h4>1. Input</h4>
+                        <p>User pastes email text or uploads a screenshot. OCR extracts text from images automatically.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"><i class="fas fa-filter"></i></div>
+                    <div class="timeline-body">
+                        <h4>2. Preprocessing</h4>
+                        <p>Text is lowercased, tokenized, stopwords removed, and words are stemmed using Porter Stemmer.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"><i class="fas fa-vector-square"></i></div>
+                    <div class="timeline-body">
+                        <h4>3. Vectorization</h4>
+                        <p>Cleaned text is converted into a numerical TF-IDF feature vector with 5000 unigram and bigram features.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"><i class="fas fa-robot"></i></div>
+                    <div class="timeline-body">
+                        <h4>4. Classification</h4>
+                        <p>The Naive Bayes model predicts spam or ham and returns a confidence probability score.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"><i class="fas fa-bell"></i></div>
+                    <div class="timeline-body">
+                        <h4>5. Result</h4>
+                        <p>An animated popup displays the verdict with a confidence bar. The result is saved to your history.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="cta-section">
+            <h2>Ready to Guard Your Inbox?</h2>
+            <p>Join SpamGuard today and never worry about spam emails again.</p>
+            <a href="/signup" class="btn-primary"><i class="fas fa-shield-halved"></i> Start for Free</a>
+        </section>
+
+        <!-- FOOTER -->
+        <footer>
+            <div class="footer-logo"><i class="fas fa-shield-halved"></i> SpamGuard</div>
+            <p>&copy; <span id="yr"></span> SpamGuard. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/signin">Login</a>
+                <a href="/signup">Sign Up</a>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>

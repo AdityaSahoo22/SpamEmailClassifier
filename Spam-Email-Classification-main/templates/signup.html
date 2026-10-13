@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpamGuard - Register</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: #000C1D;
+            display: flex; align-items: center; justify-content: center;
+            overflow-x: hidden; padding: 30px 20px;
+        }
+        .bg-animation {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+        }
+        .bg-animation span {
+            position: absolute; display: block; border-radius: 50%;
+            animation: float 20s infinite linear;
+            background: rgba(0,123,255,0.05); border: 1px solid rgba(0,123,255,0.1);
+        }
+        .bg-animation span:nth-child(1) { width: 350px; height: 350px; top: -80px; right: -80px; animation-duration: 22s; }
+        .bg-animation span:nth-child(2) { width: 200px; height: 200px; bottom: 10%; left: 5%; animation-duration: 17s; animation-delay: -7s; }
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.5; }
+            50% { transform: translateY(-25px) rotate(180deg); opacity: 1; }
+            100% { transform: translateY(0) rotate(360deg); opacity: 0.5; }
+        }
+        .card {
+            background: #0a1628; border-radius: 24px;
+            padding: 45px 50px; width: 100%; max-width: 620px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            position: relative; z-index: 1;
+        }
+        .card-header { text-align: center; margin-bottom: 30px; }
+        .card-header .icon { font-size: 48px; color: #007BFF; margin-bottom: 12px; }
+        .card-header h2 { color: #fff; font-size: 26px; font-weight: 700; }
+        .card-header p { color: #888; font-size: 13px; margin-top: 5px; }
+        .flash-box {
+            padding: 10px 16px; border-radius: 10px;
+            margin-bottom: 16px; font-size: 13px;
+        }
+        .flash-danger { background: rgba(255,77,77,0.1); color: #ff4d4d; border: 1px solid rgba(255,77,77,0.3); }
+        .flash-success { background: rgba(0,230,118,0.1); color: #00e676; border: 1px solid rgba(0,230,118,0.3); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .input-group { position: relative; }
+        .input-group.full { grid-column: 1 / -1; }
+        .input-group label { display: block; color: #888; font-size: 12px; margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-group i.icon { position: absolute; left: 14px; bottom: 14px; color: #555; font-size: 14px; }
+        .input-group input {
+            width: 100%; padding: 13px 14px 13px 40px;
+            background: #111e33; border: 1px solid #1e3050;
+            border-radius: 12px; color: #fff; font-size: 14px;
+            font-family: 'Poppins', sans-serif; outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .input-group input:focus { border-color: #007BFF; box-shadow: 0 0 0 3px rgba(0,123,255,0.15); }
+        .input-group input::placeholder { color: #444; }
+        .pw-wrap { position: relative; }
+        .pw-wrap input { padding-right: 44px; }
+        .toggle-pw {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            color: #555; cursor: pointer; background: none; border: none; font-size: 14px;
+        }
+        .toggle-pw:hover { color: #007BFF; }
+        .strength-bar { height: 4px; border-radius: 4px; margin-top: 6px; background: #1e3050; overflow: hidden; }
+        .strength-fill { height: 100%; border-radius: 4px; width: 0; transition: width 0.3s, background 0.3s; }
+        .strength-text { font-size: 11px; color: #555; margin-top: 4px; }
+        .btn-register {
+            width: 100%; padding: 14px; margin-top: 24px;
+            background: linear-gradient(135deg, #007BFF, #0040a0);
+            color: #fff; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 600; cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-register:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,123,255,0.4); }
+        .login-link { text-align: center; color: #888; font-size: 13px; margin-top: 20px; }
+        .login-link a { color: #007BFF; font-weight: 600; text-decoration: none; }
+        .login-link a:hover { text-decoration: underline; }
+        .back-home { position: fixed; top: 20px; left: 20px; color: #555; font-size: 13px; text-decoration: none; z-index: 2; }
+        .back-home:hover { color: #007BFF; }
+        @media (max-width: 500px) { .grid { grid-template-columns: 1fr; } .card { padding: 30px 25px; } }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"><span></span><span></span></div>
+    <a href="/" class="back-home"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    <div class="card">
+        <div class="card-header">
+            <div class="icon"><i class="fas fa-user-shield"></i></div>
+            <h2>Create Account</h2>
+            <p>Join SpamGuard and protect your inbox today</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash-box flash-{{ category }}"><i class="fas fa-circle-info"></i> {{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="/register" id="regForm">
+            <div class="grid">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <i class="fas fa-user icon"></i>
+                    <input type="text" name="full_name" placeholder="John Doe" required>
+                </div>
+                <div class="input-group">
+                    <label>Username</label>
+                    <i class="fas fa-at icon"></i>
+                    <input type="text" name="username" id="username" placeholder="johndoe" required>
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <i class="fas fa-envelope icon"></i>
+                    <input type="email" name="email" placeholder="john@example.com" required>
+                </div>
+                <div class="input-group">
+                    <label>Phone</label>
+                    <i class="fas fa-phone icon"></i>
+                    <input type="text" name="phone" placeholder="0123456789" required>
+                </div>
+                <div class="input-group full">
+                    <label>Password</label>
+                    <i class="fas fa-lock icon"></i>
+                    <div class="pw-wrap">
+                        <input type="password" name="password" id="pw1" placeholder="Create a strong password" required>
+                        <button type="button" class="toggle-pw" onclick="togglePw('pw1',this)"><i class="fas fa-eye"></i></button>
+                    </div>
+                    <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+                    <div class="strength-text" id="strength-text"></div>
+                </div>
+                <div class="input-group full">
+                    <label>Confirm Password</label>
+                    <i class="fas fa-lock icon"></i>
+                    <div class="pw-wrap">
+                        <input type="password" name="confirm_password" id="pw2" placeholder="Repeat your password" required>
+                        <button type="button" class="toggle-pw" onclick="togglePw('pw2',this)"><i class="fas fa-eye"></i></button>
+                    </div>
+                    <div id="match-msg" style="font-size:11px; margin-top:4px;"></div>
+                </div>
+            </div>
+            <button type="submit" class="btn-register"><i class="fas fa-user-plus"></i> Create Account</button>
+        </form>
+        <div class="login-link">Already have an account? <a href="/signin">Sign in</a></div>
+    </div>
+    <script>
+        function togglePw(id, btn) {
+            const inp = document.getElementById(id);
+            inp.type = inp.type === 'password' ? 'text' : 'password';
+            btn.innerHTML = inp.type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        }
+        document.getElementById('pw1').addEventListener('input', function() {
+            const v = this.value, fill = document.getElementById('strength-fill'), txt = document.getElementById('strength-text');
+            let score = 0;
+            if (v.length >= 8) score++;
+            if (/[A-Z]/.test(v)) score++;
+            if (/[0-9]/.test(v)) score++;
+            if (/[^A-Za-z0-9]/.test(v)) score++;
+            const levels = [['0%','#1e3050',''], ['25%','#ff4d4d','Weak'], ['50%','#ffc107','Fair'], ['75%','#00bcd4','Good'], ['100%','#00e676','Strong']];
+            fill.style.width = levels[score][0]; fill.style.background = levels[score][1];
+            txt.textContent = levels[score][2]; txt.style.color = levels[score][1];
+        });
+        document.getElementById('pw2').addEventListener('input', function() {
+            const msg = document.getElementById('match-msg');
+            if (this.value === document.getElementById('pw1').value) {
+                msg.textContent = '✔ Passwords match'; msg.style.color = '#00e676';
+            } else {
+                msg.textContent = '✖ Passwords do not match'; msg.style.color = '#ff4d4d';
+            }
+        });
+    </script>
+</body>
+</html>

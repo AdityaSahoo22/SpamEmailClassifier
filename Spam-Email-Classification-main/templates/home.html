@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpamGuard - AI Spam Detection</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Poppins', sans-serif; background: #000C1D; color: #fff; overflow-x: hidden; }
+        a { text-decoration: none; }
+
+        /* NAV */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 60px;
+            background: rgba(0,12,29,0.85); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: padding 0.3s;
+        }
+        .nav-logo { font-size: 22px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .nav-logo i { color: #007BFF; }
+        .nav-links { display: flex; align-items: center; gap: 30px; }
+        .nav-links a { color: #aaa; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: #fff; }
+        .nav-btn {
+            padding: 9px 24px; background: #007BFF; color: #fff;
+            border-radius: 50px; font-size: 14px; font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,123,255,0.4); color: #fff; }
+
+        /* HERO */
+        .hero {
+            min-height: 100vh; display: flex; align-items: center;
+            padding: 120px 60px 80px;
+            position: relative; overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0;
+            background: radial-gradient(ellipse at 70% 50%, rgba(0,123,255,0.12) 0%, transparent 60%),
+                        radial-gradient(ellipse at 20% 80%, rgba(0,64,160,0.1) 0%, transparent 50%);
+        }
+        .hero-grid {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: linear-gradient(rgba(0,123,255,0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0,123,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 600px; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(0,123,255,0.1); border: 1px solid rgba(0,123,255,0.3);
+            padding: 6px 16px; border-radius: 50px; font-size: 12px; color: #007BFF;
+            margin-bottom: 24px; font-weight: 500;
+        }
+        .hero-badge span { width: 6px; height: 6px; background: #007BFF; border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+        .hero h1 { font-size: 58px; font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
+        .hero h1 .highlight { background: linear-gradient(135deg, #007BFF, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { color: #aaa; font-size: 17px; line-height: 1.7; margin-bottom: 35px; max-width: 480px; }
+        .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
+        .btn-primary-hero {
+            padding: 14px 32px; background: linear-gradient(135deg, #007BFF, #0040a0);
+            color: #fff; border-radius: 50px; font-size: 15px; font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-primary-hero:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,123,255,0.4); color: #fff; }
+        .btn-outline-hero {
+            padding: 14px 32px; border: 2px solid rgba(255,255,255,0.15);
+            color: #fff; border-radius: 50px; font-size: 15px; font-weight: 600;
+            transition: border-color 0.2s, background 0.2s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-outline-hero:hover { border-color: #007BFF; background: rgba(0,123,255,0.1); color: #fff; }
+        .hero-visual {
+            position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
+            z-index: 1;
+        }
+        .email-card {
+            background: #0a1628; border: 1px solid #1e3050; border-radius: 16px;
+            padding: 20px 24px; width: 320px; margin-bottom: 16px;
+            animation: floatCard 4s ease-in-out infinite;
+        }
+        .email-card:nth-child(2) { animation-delay: -2s; margin-left: 40px; }
+        @keyframes floatCard { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        .email-card .tag {
+            display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-bottom: 10px;
+        }
+        .tag-spam { background: rgba(255,77,77,0.15); color: #ff4d4d; }
+        .tag-safe { background: rgba(0,230,118,0.15); color: #00e676; }
+        .email-card .subject { color: #fff; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+        .email-card .preview { color: #555; font-size: 12px; line-height: 1.5; }
+        .email-card .confidence { margin-top: 12px; }
+        .email-card .conf-bar { height: 4px; background: #1e3050; border-radius: 4px; overflow: hidden; margin-top: 4px; }
+        .email-card .conf-fill { height: 100%; border-radius: 4px; }
+        .spam-fill { background: #ff4d4d; width: 92%; }
+        .safe-fill { background: #00e676; width: 88%; }
+        .conf-label { font-size: 11px; color: #555; display: flex; justify-content: space-between; }
+
+        /* STATS */
+        .stats-section { padding: 60px; background: #050d1a; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; max-width: 1000px; margin: 0 auto; }
+        .stat-card { text-align: center; padding: 30px 20px; background: #0a1628; border-radius: 16px; border: 1px solid #1e3050; }
+        .stat-card .num { font-size: 40px; font-weight: 800; background: linear-gradient(135deg, #007BFF, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-card .lbl { color: #888; font-size: 13px; margin-top: 6px; }
+
+        /* FEATURES */
+        .features-section { padding: 80px 60px; }
+        .section-header { text-align: center; margin-bottom: 55px; }
+        .section-header .tag { display: inline-block; background: rgba(0,123,255,0.1); color: #007BFF; padding: 5px 16px; border-radius: 50px; font-size: 12px; font-weight: 600; margin-bottom: 14px; border: 1px solid rgba(0,123,255,0.2); }
+        .section-header h2 { font-size: 38px; font-weight: 700; margin-bottom: 12px; }
+        .section-header p { color: #888; font-size: 15px; max-width: 500px; margin: 0 auto; }
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1100px; margin: 0 auto; }
+        .feature-card {
+            background: #0a1628; border: 1px solid #1e3050; border-radius: 20px;
+            padding: 32px 28px; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+        .feature-card:hover { transform: translateY(-6px); border-color: #007BFF; box-shadow: 0 12px 40px rgba(0,123,255,0.15); }
+        .feature-icon { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 18px; }
+        .icon-blue { background: rgba(0,123,255,0.15); color: #007BFF; }
+        .icon-green { background: rgba(0,230,118,0.15); color: #00e676; }
+        .icon-purple { background: rgba(138,43,226,0.15); color: #a855f7; }
+        .icon-orange { background: rgba(255,165,0,0.15); color: #ffa500; }
+        .icon-red { background: rgba(255,77,77,0.15); color: #ff4d4d; }
+        .icon-cyan { background: rgba(0,212,255,0.15); color: #00d4ff; }
+        .feature-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
+        .feature-card p { color: #888; font-size: 13px; line-height: 1.7; }
+
+        /* HOW IT WORKS */
+        .how-section { padding: 80px 60px; background: #050d1a; }
+        .steps { display: flex; align-items: flex-start; justify-content: center; gap: 0; max-width: 900px; margin: 0 auto; flex-wrap: wrap; }
+        .step { flex: 1; min-width: 180px; text-align: center; padding: 20px; position: relative; }
+        .step:not(:last-child)::after {
+            content: ''; position: absolute; top: 35px; right: -10px;
+            width: 20px; height: 2px; background: linear-gradient(90deg, #007BFF, transparent);
+        }
+        .step-num {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: linear-gradient(135deg, #007BFF, #0040a0);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; font-weight: 700; margin: 0 auto 16px;
+            box-shadow: 0 6px 20px rgba(0,123,255,0.3);
+        }
+        .step h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+        .step p { color: #888; font-size: 12px; line-height: 1.6; }
+
+        /* CTA */
+        .cta-section {
+            padding: 80px 60px; text-align: center;
+            background: linear-gradient(135deg, rgba(0,123,255,0.08) 0%, rgba(0,64,160,0.05) 100%);
+            border-top: 1px solid rgba(0,123,255,0.1);
+            border-bottom: 1px solid rgba(0,123,255,0.1);
+        }
+        .cta-section h2 { font-size: 40px; font-weight: 700; margin-bottom: 14px; }
+        .cta-section p { color: #aaa; font-size: 16px; margin-bottom: 35px; }
+
+        /* FOOTER */
+        footer { padding: 40px 60px; background: #050d1a; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+        .footer-logo { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .footer-logo i { color: #007BFF; }
+        footer p { color: #555; font-size: 13px; }
+        .footer-links { display: flex; gap: 20px; }
+        .footer-links a { color: #555; font-size: 13px; transition: color 0.2s; }
+        .footer-links a:hover { color: #007BFF; }
+
+        @media (max-width: 900px) {
+            nav { padding: 16px 24px; }
+            .hero { padding: 100px 24px 60px; }
+            .hero h1 { font-size: 38px; }
+            .hero-visual { display: none; }
+            .stats-grid { grid-template-columns: repeat(2,1fr); }
+            .features-grid { grid-template-columns: 1fr 1fr; }
+            .features-section, .how-section, .cta-section { padding: 60px 24px; }
+            footer { padding: 30px 24px; }
+        }
+        @media (max-width: 550px) {
+            .features-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2,1fr); }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-logo"><i class="fas fa-shield-halved"></i> SpamGuard</div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="#features">Features</a>
+            <a href="#how">How It Works</a>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;">
+            <a href="/signin" style="color:#aaa;font-size:14px;font-weight:500;">Sign In</a>
+            <a href="/signup" class="nav-btn">Get Started</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-grid"></div>
+        <div class="hero-content">
+            <div class="hero-badge"><span></span> AI-Powered Spam Detection</div>
+            <h1>Protect Your<br>Inbox with <span class="highlight">AI</span></h1>
+            <p>SpamGuard uses advanced machine learning to instantly classify emails as spam or legitimate — keeping your inbox clean and secure.</p>
+            <div class="hero-btns">
+                <a href="/signup" class="btn-primary-hero"><i class="fas fa-rocket"></i> Get Started Free</a>
+                <a href="/about" class="btn-outline-hero"><i class="fas fa-play-circle"></i> Learn More</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="email-card">
+                <span class="tag tag-spam">⚠ SPAM DETECTED</span>
+                <div class="subject">🎉 You've WON $1,000,000!</div>
+                <div class="preview">Click here to claim your prize now. Limited time offer...</div>
+                <div class="confidence">
+                    <div class="conf-label"><span>Spam Confidence</span><span>92%</span></div>
+                    <div class="conf-bar"><div class="conf-fill spam-fill"></div></div>
+                </div>
+            </div>
+            <div class="email-card">
+                <span class="tag tag-safe">✔ SAFE EMAIL</span>
+                <div class="subject">📅 Team Meeting Tomorrow at 10am</div>
+                <div class="preview">Hi, just a reminder about our weekly sync tomorrow morning...</div>
+                <div class="confidence">
+                    <div class="conf-label"><span>Safe Confidence</span><span>88%</span></div>
+                    <div class="conf-bar"><div class="conf-fill safe-fill"></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-card"><div class="num">96%</div><div class="lbl">Detection Accuracy</div></div>
+            <div class="stat-card"><div class="num">5K+</div><div class="lbl">Emails Trained On</div></div>
+            <div class="stat-card"><div class="num">&lt;1s</div><div class="lbl">Classification Speed</div></div>
+            <div class="stat-card"><div class="num">2</div><div class="lbl">Input Methods</div></div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features-section" id="features">
+        <div class="section-header">
+            <div class="tag">FEATURES</div>
+            <h2>Everything You Need</h2>
+            <p>Powerful tools to keep your inbox safe from spam and phishing attacks.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon icon-blue"><i class="fas fa-brain"></i></div>
+                <h3>AI Classification</h3>
+                <p>Naive Bayes model trained on thousands of real emails with 96% accuracy using TF-IDF vectorization.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon icon-green"><i class="fas fa-image"></i></div>
+                <h3>Screenshot Upload</h3>
+                <p>Upload a screenshot of any email and our OCR engine will extract the text and classify it instantly.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon icon-purple"><i class="fas fa-bell"></i></div>
+                <h3>Instant Popup Results</h3>
+                <p>Get immediate visual feedback with animated popups showing spam or safe status with confidence scores.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon icon-orange"><i class="fas fa-history"></i></div>
+                <h3>Prediction History</h3>
+                <p>Track all your past classifications with timestamps. Review your last 20 predictions anytime.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon icon-red"><i class="fas fa-user-shield"></i></div>
+                <h3>Secure Accounts</h3>
+                <p>Password hashing, session management, and duplicate detection keep your account safe.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon icon-cyan"><i class="fas fa-moon"></i></div>
+                <h3>Dark / Light Mode</h3>
+                <p>Switch between dark and light themes for a comfortable experience at any time of day.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-section" id="how">
+        <div class="section-header">
+            <div class="tag">HOW IT WORKS</div>
+            <h2>Simple 4-Step Process</h2>
+            <p>From email to result in under a second.</p>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <h4>Sign Up</h4>
+                <p>Create your free SpamGuard account in seconds.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <h4>Input Email</h4>
+                <p>Paste text or upload a screenshot of the email.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <h4>AI Analyzes</h4>
+                <p>Our model processes and classifies the content.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <h4>Get Result</h4>
+                <p>Instant popup shows spam or safe with confidence.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <h2>Ready to Guard Your Inbox?</h2>
+        <p>Join SpamGuard today and never worry about spam emails again.</p>
+        <a href="/signup" class="btn-primary-hero" style="display:inline-flex;"><i class="fas fa-shield-halved"></i> Start for Free</a>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-logo"><i class="fas fa-shield-halved"></i> SpamGuard</div>
+        <p>&copy; <span id="yr"></span> SpamGuard. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/signin">Login</a>
+            <a href="/signup">Sign Up</a>
+        </div>
+    </footer>
+    <script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>

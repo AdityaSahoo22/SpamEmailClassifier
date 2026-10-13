@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>SpamGuard - Classifier</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ANIMATED BACKGROUND -->
+    <div class="bg-wrap"></div>
+    <div class="bg-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- NAVBAR -->
+    <header class="header_section">
+        <div class="container-fluid">
+            <nav class="navbar navbar-expand-lg custom_nav-container">
+                <a class="navbar-brand" href="/index">
+                    <span><i class="fas fa-shield-halved" style="color:#007BFF;margin-right:8px;"></i>SpamGuard</span>
+                </a>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/about"><i class="fas fa-info-circle"></i> About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/history"><i class="fas fa-history"></i> History</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                        <li class="nav-item">
+                            <button id="theme-toggle" class="theme-toggle-button">
+                                <i class="fas fa-sun" id="sun-icon"></i>
+                                <i class="fas fa-moon" id="moon-icon"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="page-content">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="flash-box flash-{{ category }}" style="max-width:760px;margin:0 auto 0;padding:12px 20px;">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="user-greeting">
+            Welcome back, <span>{{ username }}</span> &nbsp;👋
+        </div>
+
+        <div class="classifier-wrapper">
+
+            <div class="page-header">
+                <h1>Email <span>Spam</span> Classifier</h1>
+                <p>Paste your email text or upload a screenshot — get results instantly</p>
+            </div>
+
+            <!-- STATS ROW -->
+            <div class="stats-row">
+                <div class="stat-pill">
+                    <div class="num">96%</div>
+                    <div class="lbl">Accuracy</div>
+                </div>
+                <div class="stat-pill">
+                    <div class="num">&lt;1s</div>
+                    <div class="lbl">Speed</div>
+                </div>
+                <div class="stat-pill">
+                    <div class="num">AI</div>
+                    <div class="lbl">Powered</div>
+                </div>
+            </div>
+
+            <!-- GLASS CARD -->
+            <div class="glass-card">
+
+                <!-- TABS -->
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('text', this)">
+                        <i class="fas fa-keyboard"></i> Type / Paste Text
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('upload', this)">
+                        <i class="fas fa-image"></i> Upload Screenshot
+                    </button>
+                </div>
+
+                <!-- TEXT TAB -->
+                <div class="tab-content active" id="tab-text">
+                    <form id="text-form">
+                        <textarea id="message" name="message" maxlength="2000"
+                            placeholder="Paste your email content here to check if it's spam..."></textarea>
+                        <div class="char-counter"><span id="char-count">0</span> / 2000</div>
+                        <div class="action-row">
+                            <button type="submit" class="btn-classify">
+                                <i class="fas fa-search"></i> Classify Email
+                            </button>
+                            <button type="button" class="btn-clear" onclick="clearText()">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- UPLOAD TAB -->
+                <div class="tab-content" id="tab-upload">
+                    <form id="upload-form">
+                        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('img-input').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag & drop or <span>browse</span> to upload</p>
+                            <p style="font-size:12px;color:#3a4a5a;margin-top:6px;">Supports JPG, PNG, WEBP</p>
+                            <input type="file" id="img-input" accept="image/*">
+                            <img id="preview-img" class="preview-img">
+                        </div>
+                        <div class="extracted-text" id="extracted-text"></div>
+                        <p class="ocr-note"><i class="fas fa-info-circle"></i> Text is extracted from the image using OCR</p>
+                        <div class="action-row">
+                            <button type="submit" class="btn-classify">
+                                <i class="fas fa-search"></i> Classify Screenshot
+                            </button>
+                            <button type="button" class="btn-clear" onclick="resetUpload()">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            </div><!-- end glass-card -->
+        </div><!-- end classifier-wrapper -->
+    </div><!-- end page-content -->
+
+    <!-- LOADING -->
+    <div class="loading-overlay" id="loading">
+        <div class="spinner"></div>
+        <p>Analyzing email content...</p>
+    </div>
+
+    <!-- POPUP MODAL -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-box" id="modal-box">
+            <div class="modal-icon" id="modal-icon"></div>
+            <div class="modal-badge" id="modal-badge"></div>
+            <p class="modal-desc" id="modal-desc"></p>
+            <div class="modal-msg-preview" id="modal-preview"></div>
+            <div class="conf-section">
+                <div class="conf-label-row">
+                    <span>Confidence Score</span>
+                    <span id="conf-pct"></span>
+                </div>
+                <div class="conf-track">
+                    <div class="conf-bar-fill" id="conf-fill"></div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn-again" onclick="closeModal()">
+                    <i class="fas fa-redo"></i> Classify Another
+                </button>
+                <a href="/history" class="modal-btn-history">
+                    <i class="fas fa-history"></i> View History
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+    <script>
+        // Tab switching
+        function switchTab(tab, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+
+        // Char counter
+        document.getElementById('message').addEventListener('input', function() {
+            const len = this.value.length;
+            const el = document.getElementById('char-count');
+            el.textContent = len;
+            el.parentElement.classList.toggle('over', len >= 2000);
+        });
+
+        function clearText() {
+            document.getElementById('message').value = '';
+            document.getElementById('char-count').textContent = '0';
+        }
+
+        // Image upload
+        const imgInput = document.getElementById('img-input');
+        const uploadZone = document.getElementById('upload-zone');
+        imgInput.addEventListener('change', function() { if (this.files[0]) showPreview(this.files[0]); });
+        uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+        uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+        uploadZone.addEventListener('drop', e => {
+            e.preventDefault(); uploadZone.classList.remove('dragover');
+            if (e.dataTransfer.files[0]) { imgInput.files = e.dataTransfer.files; showPreview(e.dataTransfer.files[0]); }
+        });
+        function showPreview(file) {
+            const reader = new FileReader();
+            reader.onload = e => { const img = document.getElementById('preview-img'); img.src = e.target.result; img.style.display = 'block'; };
+            reader.readAsDataURL(file);
+        }
+        function resetUpload() {
+            imgInput.value = '';
+            document.getElementById('preview-img').style.display = 'none';
+            document.getElementById('extracted-text').style.display = 'none';
+            document.getElementById('extracted-text').textContent = '';
+        }
+
+        // Modal
+        function showModal(prediction, message, confidence) {
+            const isSpam = prediction === 'Spam';
+            const box = document.getElementById('modal-box');
+            box.className = 'modal-box ' + (isSpam ? 'modal-spam' : 'modal-ham');
+            document.getElementById('modal-icon').innerHTML = isSpam ? '<i class="fas fa-ban"></i>' : '<i class="fas fa-check-circle"></i>';
+            document.getElementById('modal-badge').textContent = isSpam ? '⚠ SPAM' : '✔ NOT SPAM';
+            document.getElementById('modal-desc').textContent = isSpam
+                ? 'This email has been identified as spam. Do not click any links or share personal information.'
+                : 'This email appears to be legitimate. It looks safe to read and respond to.';
+            document.getElementById('modal-preview').textContent = message.substring(0, 150) + (message.length > 150 ? '...' : '');
+            document.getElementById('conf-pct').textContent = confidence + '%';
+            document.getElementById('conf-fill').style.width = '0';
+            document.getElementById('modal').classList.add('show');
+            setTimeout(() => { document.getElementById('conf-fill').style.width = confidence + '%'; }, 400);
+        }
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+        document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+
+        // Text classify
+        document.getElementById('text-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const msg = document.getElementById('message').value.trim();
+            if (!msg) { alert('Please enter a message.'); return; }
+            document.getElementById('loading').classList.add('show');
+            const fd = new FormData(); fd.append('message', msg);
+            const res = await fetch('/predict_ajax', { method: 'POST', body: fd, credentials: 'same-origin' });
+            const data = await res.json();
+            document.getElementById('loading').classList.remove('show');
+            if (data.error) { alert(data.error); return; }
+            showModal(data.prediction, msg, data.confidence);
+        });
+
+        // Image classify
+        document.getElementById('upload-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const file = imgInput.files[0];
+            if (!file) { alert('Please upload an image.'); return; }
+            document.getElementById('loading').classList.add('show');
+            const fd = new FormData(); fd.append('image', file);
+            const res = await fetch('/predict_image', { method: 'POST', body: fd, credentials: 'same-origin' });
+            const data = await res.json();
+            document.getElementById('loading').classList.remove('show');
+            if (data.error) { alert(data.error); return; }
+            const extEl = document.getElementById('extracted-text');
+            extEl.textContent = 'Extracted: ' + data.extracted_text;
+            extEl.style.display = 'block';
+            showModal(data.prediction, data.extracted_text, data.confidence);
+        });
+    </script>
+</body>
+</html>

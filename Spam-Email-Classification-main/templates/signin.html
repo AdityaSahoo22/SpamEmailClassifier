@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpamGuard - Login</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: #000C1D;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .bg-animation {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+        }
+        .bg-animation span {
+            position: absolute; display: block; border-radius: 50%;
+            animation: float 20s infinite linear;
+            background: rgba(0, 123, 255, 0.05);
+            border: 1px solid rgba(0, 123, 255, 0.1);
+        }
+        .bg-animation span:nth-child(1) { width: 400px; height: 400px; top: -100px; left: -100px; animation-duration: 25s; }
+        .bg-animation span:nth-child(2) { width: 250px; height: 250px; bottom: -50px; right: 10%; animation-duration: 18s; animation-delay: -5s; }
+        .bg-animation span:nth-child(3) { width: 150px; height: 150px; top: 40%; right: -50px; animation-duration: 15s; animation-delay: -10s; }
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.5; }
+            50% { transform: translateY(-30px) rotate(180deg); opacity: 1; }
+            100% { transform: translateY(0) rotate(360deg); opacity: 0.5; }
+        }
+        .page-wrapper {
+            display: flex; width: 900px; min-height: 540px;
+            border-radius: 24px; overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            position: relative; z-index: 1;
+        }
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #007BFF 0%, #0040a0 100%);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 50px 40px; text-align: center;
+        }
+        .left-panel .shield-icon { font-size: 70px; color: rgba(255,255,255,0.9); margin-bottom: 20px; }
+        .left-panel h2 { color: #fff; font-size: 28px; font-weight: 700; margin-bottom: 12px; }
+        .left-panel p { color: rgba(255,255,255,0.8); font-size: 14px; line-height: 1.7; }
+        .stats { display: flex; gap: 30px; margin-top: 35px; }
+        .stat { text-align: center; }
+        .stat .num { font-size: 26px; font-weight: 700; color: #fff; }
+        .stat .lbl { font-size: 11px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1px; }
+        .right-panel {
+            flex: 1; background: #0a1628;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 50px 45px;
+        }
+        .right-panel h3 { color: #fff; font-size: 24px; font-weight: 600; margin-bottom: 6px; }
+        .right-panel .subtitle { color: #888; font-size: 13px; margin-bottom: 30px; }
+        .flash-box {
+            width: 100%; padding: 10px 16px; border-radius: 10px;
+            margin-bottom: 16px; font-size: 13px;
+        }
+        .flash-danger { background: rgba(255,77,77,0.1); color: #ff4d4d; border: 1px solid rgba(255,77,77,0.3); }
+        .flash-success { background: rgba(0,230,118,0.1); color: #00e676; border: 1px solid rgba(0,230,118,0.3); }
+        .flash-info { background: rgba(0,123,255,0.1); color: #007BFF; border: 1px solid rgba(0,123,255,0.3); }
+        .input-group {
+            width: 100%; position: relative; margin-bottom: 18px;
+        }
+        .input-group i.icon {
+            position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+            color: #555; font-size: 15px;
+        }
+        .input-group input {
+            width: 100%; padding: 14px 16px 14px 44px;
+            background: #111e33; border: 1px solid #1e3050;
+            border-radius: 12px; color: #fff; font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none;
+        }
+        .input-group input:focus { border-color: #007BFF; box-shadow: 0 0 0 3px rgba(0,123,255,0.15); }
+        .input-group input::placeholder { color: #444; }
+        .toggle-pw {
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+            color: #555; cursor: pointer; font-size: 15px; background: none; border: none;
+        }
+        .toggle-pw:hover { color: #007BFF; }
+        .remember-row { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 22px; font-size: 13px; }
+        .remember-row label { color: #888; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .remember-row input[type=checkbox] { accent-color: #007BFF; }
+        .btn-login {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #007BFF, #0040a0);
+            color: #fff; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 600; cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,123,255,0.4); }
+        .divider { display: flex; align-items: center; gap: 12px; width: 100%; margin: 20px 0; }
+        .divider hr { flex: 1; border: none; border-top: 1px solid #1e3050; }
+        .divider span { color: #555; font-size: 12px; }
+        .signup-link { color: #888; font-size: 13px; text-align: center; }
+        .signup-link a { color: #007BFF; font-weight: 600; text-decoration: none; }
+        .signup-link a:hover { text-decoration: underline; }
+        .back-home { position: absolute; top: 20px; left: 20px; color: #555; font-size: 13px; text-decoration: none; z-index: 2; }
+        .back-home:hover { color: #007BFF; }
+        @media (max-width: 700px) {
+            .left-panel { display: none; }
+            .page-wrapper { width: 95%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <span></span><span></span><span></span>
+    </div>
+    <a href="/" class="back-home"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    <div class="page-wrapper">
+        <div class="left-panel">
+            <div class="shield-icon"><i class="fas fa-shield-halved"></i></div>
+            <h2>SpamGuard AI</h2>
+            <p>Protect your inbox with our advanced machine learning spam detection system.</p>
+            <div class="stats">
+                <div class="stat"><div class="num">96%</div><div class="lbl">Accuracy</div></div>
+                <div class="stat"><div class="num">5K+</div><div class="lbl">Emails Trained</div></div>
+                <div class="stat"><div class="num">AI</div><div class="lbl">Powered</div></div>
+            </div>
+        </div>
+        <div class="right-panel">
+            <h3>Welcome Back 👋</h3>
+            <p class="subtitle">Sign in to your SpamGuard account</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="flash-box flash-{{ category }}"><i class="fas fa-circle-info"></i> {{ message }}</div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form action="/login" method="POST" style="width:100%">
+                <div class="input-group">
+                    <i class="fas fa-envelope icon"></i>
+                    <input type="email" name="email" placeholder="Email address" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock icon"></i>
+                    <input type="password" name="password" id="pw" placeholder="Password" required>
+                    <button type="button" class="toggle-pw" onclick="document.getElementById('pw').type = document.getElementById('pw').type === 'password' ? 'text' : 'password'">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="remember-row">
+                    <label><input type="checkbox" name="remember_me"> Remember me</label>
+                </div>
+                <button type="submit" class="btn-login"><i class="fas fa-right-to-bracket"></i> Sign In</button>
+            </form>
+            <div class="divider"><hr><span>OR</span><hr></div>
+            <div class="signup-link">Don't have an account? <a href="/signup">Create one</a></div>
+        </div>
+    </div>
+</body>
+</html>
